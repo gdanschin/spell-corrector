@@ -1,15 +1,16 @@
 package ru.hh.spellcorrector.morpher;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import ru.hh.spellcorrector.Correction;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Set;
+
 
 public class Composition extends Morpher {
 
@@ -22,26 +23,26 @@ public class Composition extends Morpher {
   }
 
   @Override
-  public Iterable<String> variants(final String source) {
-    return new Iterable<String>() {
+  public Iterable<Correction> corrections(final Correction source) {
+    return new Iterable<Correction>() {
       @Override
-      public Iterator<String> iterator() {
+      public Iterator<Correction> iterator() {
         return new PowerIterator(source);
       }
     };
   }
 
-  private class PowerIterator implements Iterator<String> {
+  private class PowerIterator implements Iterator<Correction> {
 
     final Set<String> passedElements = Sets.newHashSet();
     final Iterator<? extends Morpher> morpherIt = morphers.iterator();
 
-    Iterator<String> source;
-    Queue<String> level = Lists.newLinkedList();
-    Optional<String> current;
+    Iterator<Correction> source;
+    Queue<Correction> level = Lists.newLinkedList();
+    Optional<Correction> current;
     boolean memorize = true;
 
-    public PowerIterator(String source) {
+    public PowerIterator(Correction source) {
       this.source = Iterators.forArray(source);
       nextStep();
     }
@@ -52,11 +53,11 @@ public class Composition extends Morpher {
     }
 
     @Override
-    public String next() {
+    public Correction next() {
       if (!current.isPresent()) {
         throw new NoSuchElementException();
       }
-      String result = current.get();
+      Correction result = current.get();
       nextStep();
       return result;
     }
@@ -65,10 +66,10 @@ public class Composition extends Morpher {
       while (morpherIt.hasNext() || source.hasNext()) {
 
         while (source.hasNext()) {
-          String variant = source.next();
-          if (!passedElements.contains(variant)) {
+          Correction variant = source.next();
+          if (!passedElements.contains(variant.getText())) {
             if (memorize || memorizeLast) {
-              passedElements.add(variant);
+              passedElements.add(variant.getText());
               level.add(variant);
             }
             current = Optional.of(variant);
@@ -78,14 +79,9 @@ public class Composition extends Morpher {
 
         if (morpherIt.hasNext()) {
           final Morpher morpher = morpherIt.next();
-
           memorize = morpherIt.hasNext();
-          source = Iterators.concat(Iterators.transform(level.iterator(), new Function<String, Iterator<String>>() {
-            @Override
-            public Iterator<String> apply(String input) {
-              return morpher.variants(input).iterator();
-            }
-          }));
+
+          source = morpher.corrections(level).iterator();
           level = Lists.newLinkedList();
         }
       }

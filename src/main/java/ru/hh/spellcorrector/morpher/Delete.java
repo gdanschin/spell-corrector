@@ -2,14 +2,13 @@ package ru.hh.spellcorrector.morpher;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import com.sun.istack.internal.Nullable;
 import ru.hh.spellcorrector.Partition;
 
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.transform;
 import static ru.hh.spellcorrector.Utils.stringPartitions;
 
-class Delete extends Morpher {
+class Delete extends FixedMultiplierMorpher {
 
   private static final Morpher INSTANCE = new Delete();
 
@@ -20,7 +19,7 @@ class Delete extends Morpher {
   }
 
   @Override
-  public Iterable<String> variants(String source) {
+  protected Iterable<String> variants(String source) {
     return
         filter(
             transform(
@@ -28,7 +27,7 @@ class Delete extends Morpher {
                     stringPartitions(source),
                     new Predicate<Partition>() {
                       @Override
-                      public boolean apply(@Nullable Partition input) {
+                      public boolean apply(Partition input) {
                         return input.right().length() > 0;
                       }
                     }),

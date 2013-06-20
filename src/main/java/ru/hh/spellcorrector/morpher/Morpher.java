@@ -1,31 +1,25 @@
 package ru.hh.spellcorrector.morpher;
 
 import com.google.common.base.Function;
+import ru.hh.spellcorrector.Correction;
 
-public abstract class Morpher {
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Iterables.transform;
 
-  public abstract Iterable<String> variants(String source);
+public abstract class Morpher implements Function<Correction, Iterable<Correction>> {
 
-  private final Function<String, Iterable<String>> FUNCTION = new Function<String, Iterable<String>>() {
-    @Override
-    public Iterable<String> apply(String t) {
-      return variants(t);
-    }
-  };
+  public abstract Iterable<Correction> corrections(Correction source);
 
-  final Function<String, Iterable<String>> asFunction() {
-    return FUNCTION;
+  public Iterable<Correction> corrections(Iterable<Correction> sources) {
+    return concat(transform(sources, this));
   }
 
-  private static final Function<Morpher, Function<String, Iterable<String>>> TO_FUNC =
-      new Function<Morpher, Function<String, Iterable<String>>>() {
-        @Override
-        public Function<String, Iterable<String>> apply(Morpher input) {
-          return input.asFunction();
-        }
-      };
+  public final Iterable<Correction> corrections(String source) {
+    return corrections(Correction.of(source));
+  }
 
-  static final Function<Morpher, Function<String, Iterable<String>>> toFunction() {
-    return TO_FUNC;
+  @Override
+  public final Iterable<Correction> apply(Correction input) {
+    return corrections(input);
   }
 }

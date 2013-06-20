@@ -2,8 +2,10 @@ package ru.hh.spellcorrector.morpher;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import org.testng.annotations.Test;
+import ru.hh.spellcorrector.Correction;
 
 import java.util.Set;
 
@@ -24,17 +26,17 @@ public class MorpherTest {
 
   @Test
   public void deleteTest() {
-    assertEquals(set(delete().variants("abcd")), set("abc", "abd", "acd", "bcd"));
+    assertEquals(correctionSet(delete().corrections("abcd")), set("abc", "abd", "acd", "bcd"));
   }
 
   @Test
   public void transposeTest() {
-    assertEquals(set(transpose().variants("abcd")), set("abdc", "acbd", "bacd"));
+    assertEquals(correctionSet(transpose().corrections("abcd")), set("abdc", "acbd", "bacd"));
   }
 
   @Test
   public void insertTest() {
-    assertEquals(set(insert(alphabet).variants("abcd")), set(
+    assertEquals(correctionSet(insert(alphabet).corrections("abcd")), set(
         "abcdX", "abcdY", "abcdZ",
         "abcXd", "abcYd", "abcZd",
         "abXcd", "abYcd", "abZcd",
@@ -46,7 +48,7 @@ public class MorpherTest {
 
   @Test
   public void replaceTest() {
-    assertEquals(set(replace(alphabet).variants("abcd")), set(
+    assertEquals(correctionSet(replace(alphabet).corrections("abcd")), set(
         "abcX", "abcY", "abcZ",
         "abXd", "abYd", "abZd",
         "aXcd", "aYcd", "aZcd",
@@ -57,7 +59,7 @@ public class MorpherTest {
 
   @Test
   public void levenshteinTest() {
-    assertEquals(set(levenshteinStep(alphabet).variants("abcd")), set(
+    assertEquals(correctionSet(levenshteinStep(alphabet).corrections("abcd")), set(
         "abc", "abd", "acd", "bcd",
         "abdc", "acbd", "bacd",
         "abcdX", "abcdY", "abcdZ",
@@ -77,18 +79,26 @@ public class MorpherTest {
     final Morpher step = levenshteinStep(alphabet);
 
     Set<String> expected = Sets.newHashSet("abcd");
-    expected.addAll(set(levenshteinStep(alphabet).variants("abcd")));
+    expected.addAll(correctionSet(levenshteinStep(alphabet).corrections("abcd")));
 
-    assertEquals(set(expected), set(compose(step).variants("abcd")));
+    assertEquals(set(expected), correctionSet(compose(step).corrections("abcd")));
 
-    expected.addAll(set(concat(transform(expected, new Function<String, Iterable<String>>() {
+    expected.addAll(correctionSet(concat(transform(expected, new Function<String, Iterable<Correction>>() {
       @Override
-      public Iterable<String> apply(String input) {
-        return step.variants(input);
+      public Iterable<Correction> apply(String input) {
+        return step.corrections(input);
       }
     }))));
 
-    assertEquals(set(compose(step, step).variants("abcd")), expected);
+    assertEquals(correctionSet(compose(step, step).corrections("abcd")), expected);
+  }
+
+  public static Set<String> correctionSet(Correction... corrections) {
+    return correctionSet(asList(corrections));
+  }
+
+  public static Set<String> correctionSet(Iterable<? extends Correction> corrections) {
+    return set(Iterables.transform(corrections, Correction.TEXT));
   }
 
   public static Set<String> set(String... word) {

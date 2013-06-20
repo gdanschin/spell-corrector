@@ -1,5 +1,7 @@
 package ru.hh.spellcorrector.morpher;
 
+import ru.hh.spellcorrector.dict.Dictionary;
+
 import static java.util.Arrays.asList;
 
 public class Morphers {
@@ -24,10 +26,6 @@ public class Morphers {
     return new Replace(alphabet);
   }
 
-  public static Morpher uniq(Morpher morpher) {
-    return new Uniq(morpher);
-  }
-
   public static Morpher sum(Morpher... morphers) {
     return sum(asList(morphers));
   }
@@ -44,4 +42,15 @@ public class Morphers {
     return new Composition(morphers, false);
   }
 
+  public static Morpher language(Dictionary dict) {
+    return language(dict, 0.5);
+  }
+
+  public static Morpher language(Dictionary dict, double power) {
+    return new Language(dict, power);
+  }
+
+  public static Morpher keyboard() {
+    return new Keyboard(0.3);
+  }
 }

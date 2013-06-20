@@ -9,7 +9,7 @@ import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.transform;
 import static ru.hh.spellcorrector.Utils.stringPartitions;
 
-class Insert extends Morpher {
+class Insert extends FixedMultiplierMorpher {
 
   private final ImmutableList<Character> alphabet;
 
@@ -18,7 +18,7 @@ class Insert extends Morpher {
   }
 
   @Override
-  public Iterable<String> variants(String source) {
+  protected Iterable<String> variants(String source) {
     return concat(transform(stringPartitions(source), new Function<Partition, Iterable<String>>() {
       @Override
       public Iterable<String> apply(final Partition partition) {

@@ -1,4 +1,4 @@
-package ru.hh.spellcorrector;
+package ru.hh.spellcorrector.dict;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -12,9 +12,9 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
-public class Dictionary {
+public class StreamDictionary implements Dictionary {
 
-  private static volatile Dictionary instance;
+  private static volatile StreamDictionary instance;
 
   public static Dictionary getInstance() {
     return instance;
@@ -22,18 +22,18 @@ public class Dictionary {
 
   public static Dictionary load(InputStream stream) throws IOException {
     if (instance == null) {
-      synchronized (Dictionary.class) {
+      synchronized (StreamDictionary.class) {
         if (instance == null) {
-          instance = new Dictionary(stream);
+          instance = new StreamDictionary(stream);
         }
       }
     }
     return instance;
   }
 
-  public final Map<String, Integer> dict;
+  private final Map<String, Integer> dict;
 
-  private Dictionary(InputStream stream) throws IOException  {
+  private StreamDictionary(InputStream stream) throws IOException  {
     BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
 
@@ -46,6 +46,16 @@ public class Dictionary {
       mapBuilder.put(split.get(0), Integer.valueOf(split.get(1)));
     }
     dict = ImmutableMap.copyOf(mapBuilder);
+  }
+
+  @Override
+  public int getFreq(String word) {
+    return dict.containsKey(word) ? dict.get(word) + 1 : 1;
+  }
+
+  @Override
+  public boolean isKnown(String word) {
+    return dict.containsKey(word);
   }
 
 }

@@ -3,7 +3,6 @@ package ru.hh.spellcorrector.morpher;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ru.hh.spellcorrector.Partition;
 
@@ -12,7 +11,7 @@ import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.transform;
 import static ru.hh.spellcorrector.Utils.stringPartitions;
 
-class Replace extends Morpher {
+class Replace extends FixedMultiplierMorpher {
 
   private final ImmutableList<Character> alphabet;
 

@@ -1,8 +1,10 @@
 package ru.hh.spellcorrector.morpher;
 
+import com.google.common.base.Function;
+import ru.hh.spellcorrector.Correction;
+
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.transform;
-import static ru.hh.spellcorrector.Utils.applySeveral;
 
 class Sum extends Morpher {
 
@@ -13,7 +15,15 @@ class Sum extends Morpher {
   }
 
   @Override
-  public Iterable<String> variants(String source) {
-    return concat(applySeveral(transform(children, Morpher.toFunction()), source));
+  public Iterable<Correction> corrections(final Correction source) {
+    return concat(
+        transform(
+            children,
+            new Function<Morpher, Iterable<Correction>>() {
+              @Override
+              public Iterable<Correction> apply(Morpher input) {
+                return input.corrections(source);
+              }
+            }));
   }
 }
