@@ -1,9 +1,9 @@
 package ru.hh.spellcorrector.morpher;
 
+import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import ru.hh.spellcorrector.PrecomputationalIterator;
 import ru.hh.spellcorrector.Correction;
 
 import java.util.Iterator;
@@ -32,7 +32,7 @@ public class Composition extends Morpher {
     };
   }
 
-  private class PowerIterator extends PrecomputationalIterator<Correction> {
+  private class PowerIterator extends AbstractIterator<Correction> {
 
     final Set<List<String>> passedElements = Sets.newHashSet();
     final Iterator<? extends Morpher> morpherIt = morphers.iterator();
@@ -43,11 +43,10 @@ public class Composition extends Morpher {
 
     public PowerIterator(Correction source) {
       this.source = Iterators.forArray(source);
-      nextStep();
     }
 
     @Override
-    protected void nextStep() {
+    protected Correction computeNext() {
       while (morpherIt.hasNext() || source.hasNext()) {
 
         while (source.hasNext()) {
@@ -58,8 +57,7 @@ public class Composition extends Morpher {
               level.add(variant);
             }
 
-            setCurrent(variant);
-            return;
+            return variant;
           }
         }
 
@@ -72,7 +70,7 @@ public class Composition extends Morpher {
         }
       }
 
-      stopIteration();
+      return endOfData();
     }
   }
 }

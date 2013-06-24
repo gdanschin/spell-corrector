@@ -2,9 +2,9 @@ package ru.hh.spellcorrector.morpher;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterables;
 import ru.hh.spellcorrector.Correction;
-import ru.hh.spellcorrector.PrecomputationalIterator;
 import ru.hh.spellcorrector.dict.Dictionary;
 
 import java.util.Arrays;
@@ -63,7 +63,7 @@ class Language extends Morpher {
     };
   }
 
-  class LangIterator extends PrecomputationalIterator<Correction> {
+  class LangIterator extends AbstractIterator<Correction> {
 
     double maxWeight = 0;
 
@@ -72,34 +72,30 @@ class Language extends Morpher {
 
     public LangIterator(Iterable<Correction> source) {
       this.source = source.iterator();
-      nextStep();
+    }
+
+    protected Correction stopIteration() {
+      System.out.println(steps);
+      return endOfData();
     }
 
     @Override
-    protected void nextStep() {
+    protected Correction computeNext() {
       while (source.hasNext()) {
         steps++;
         Correction next = source.next();
 
         if (shortCircuit && next.getWeight() * norm < maxWeight) {
-          stopIteration();
-          return;
+          return stopIteration();
         }
 
         if (fromDictionary.apply(next)) {
           Correction cur = modifyWeight.apply(next);
-          setCurrent(cur);
           maxWeight = Math.max(cur.getWeight(), maxWeight);
-          return;
+          return cur;
         }
       }
-      stopIteration();
-    }
-
-    @Override
-    protected void stopIteration() {
-      super.stopIteration();
-      System.out.println(steps);
+      return stopIteration();
     }
   }
 }

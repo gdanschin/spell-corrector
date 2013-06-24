@@ -1,12 +1,12 @@
 package ru.hh.spellcorrector.morpher;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ru.hh.spellcorrector.Correction;
 import ru.hh.spellcorrector.Partition;
-import ru.hh.spellcorrector.PrecomputationalIterator;
 import ru.hh.spellcorrector.Utils;
 
 import java.util.Arrays;
@@ -38,7 +38,7 @@ class Split extends Morpher {
     };
   }
 
-  class SplitIterator extends PrecomputationalIterator<Correction> {
+  class SplitIterator extends AbstractIterator<Correction> {
 
     private final List<String> words;
     private int index = -1;
@@ -48,15 +48,13 @@ class Split extends Morpher {
     public SplitIterator(Correction correction, double weight) {
       this.words = correction.getWords();
       this.weight = weight;
-      nextStep();
     }
 
     @Override
-    public void nextStep() {
+    public Correction computeNext() {
       while ((variants != null && variants.hasNext()) || index < words.size()) {
         if (variants != null && variants.hasNext()) {
-          setCurrent(makeCorrection(variants.next()));
-          return;
+          return makeCorrection(variants.next());
         }
         if (++index < words.size()) {
           variants = Iterables.filter(Utils.stringPartitions(words.get(index)), new Predicate<Partition>() {
@@ -68,7 +66,7 @@ class Split extends Morpher {
         }
       }
 
-      stopIteration();
+      return endOfData();
     }
 
     Correction makeCorrection(Partition variant) {

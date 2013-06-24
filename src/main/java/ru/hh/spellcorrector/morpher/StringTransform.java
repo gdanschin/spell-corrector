@@ -1,8 +1,8 @@
 package ru.hh.spellcorrector.morpher;
 
+import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import ru.hh.spellcorrector.PrecomputationalIterator;
 import ru.hh.spellcorrector.Correction;
 
 import java.util.Iterator;
@@ -35,7 +35,7 @@ abstract class StringTransform extends Morpher {
   }
 
 
-  class MultiIterator extends PrecomputationalIterator<Correction> {
+  class MultiIterator extends AbstractIterator<Correction> {
 
     private final List<String> words;
     private int index = -1;
@@ -45,22 +45,20 @@ abstract class StringTransform extends Morpher {
     public MultiIterator(Correction correction, double weight) {
       this.words = Lists.newArrayList(correction.getWords());
       this.weight = weight;
-      nextStep();
     }
 
     @Override
-    public void nextStep() {
+    public Correction computeNext() {
       while ((variants != null && variants.hasNext()) || index < words.size()) {
         if (variants != null && variants.hasNext()) {
-          setCurrent(makeCorrection(variants.next()));
-          return;
+          return makeCorrection(variants.next());
         }
         if (++index < words.size()) {
           variants = variants(words.get(index)).iterator();
         }
       }
 
-      stopIteration();
+      return endOfData();
     }
 
     Correction makeCorrection(String variant) {
