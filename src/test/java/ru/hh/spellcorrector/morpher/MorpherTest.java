@@ -98,7 +98,12 @@ public class MorpherTest {
   }
 
   public static Set<String> correctionSet(Iterable<? extends Correction> corrections) {
-    return set(Iterables.transform(corrections, Correction.TEXT));
+    return set(Iterables.concat(Iterables.transform(corrections, new Function<Correction, Iterable<String>>() {
+      @Override
+      public Iterable<String> apply(Correction input) {
+        return input.getWords();
+      }
+    })));
   }
 
   public static Set<String> set(String... word) {

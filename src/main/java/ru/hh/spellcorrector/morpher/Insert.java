@@ -9,7 +9,7 @@ import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.transform;
 import static ru.hh.spellcorrector.Utils.stringPartitions;
 
-class Insert extends FixedMultiplierMorpher {
+class Insert extends StringTransform {
 
   private final ImmutableList<Character> alphabet;
 

@@ -8,7 +8,7 @@ import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.transform;
 import static ru.hh.spellcorrector.Utils.stringPartitions;
 
-class Delete extends FixedMultiplierMorpher {
+class Delete extends StringTransform {
 
   private static final Morpher INSTANCE = new Delete();
 

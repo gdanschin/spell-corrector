@@ -31,25 +31,35 @@ public class StreamDictionary implements Dictionary {
     return instance;
   }
 
-  private final Map<String, Integer> dict;
+  private final Map<String, Double> dict;
+  private final double maxVal;
 
   private StreamDictionary(InputStream stream) throws IOException  {
     BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
 
-    Map<String, Integer> mapBuilder = Maps.newHashMap();
+    Map<String, Double> mapBuilder = Maps.newHashMap();
     Splitter splitter = Splitter.on('|');
+
+    double maxVal = 0;
 
     String line;
     while ((line = reader.readLine()) != null) {
       List<String> split = ImmutableList.copyOf(splitter.split(line));
-      mapBuilder.put(split.get(0), Integer.valueOf(split.get(1)));
+
+      String key = split.get(0).toLowerCase();
+      double val = Double.valueOf(split.get(1));
+      maxVal = Math.max(val, maxVal);
+
+      mapBuilder.put(key, val);
     }
+
     dict = ImmutableMap.copyOf(mapBuilder);
+    this.maxVal = maxVal;
   }
 
   @Override
-  public int getFreq(String word) {
+  public double getFreq(String word) {
     return dict.containsKey(word) ? dict.get(word) + 1 : 1;
   }
 
@@ -58,4 +68,8 @@ public class StreamDictionary implements Dictionary {
     return dict.containsKey(word);
   }
 
+  @Override
+  public double maxFreq() {
+    return maxVal;
+  }
 }

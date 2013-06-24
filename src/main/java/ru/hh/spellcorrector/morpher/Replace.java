@@ -11,7 +11,7 @@ import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.transform;
 import static ru.hh.spellcorrector.Utils.stringPartitions;
 
-class Replace extends FixedMultiplierMorpher {
+class Replace extends StringTransform {
 
   private final ImmutableList<Character> alphabet;
 

@@ -42,15 +42,19 @@ public class Morphers {
     return new Composition(morphers, false);
   }
 
-  public static Morpher language(Dictionary dict) {
-    return language(dict, 0.5);
+  public static Morpher language(Dictionary dict, boolean shortCircuit) {
+    return language(dict, 0.5, shortCircuit);
   }
 
-  public static Morpher language(Dictionary dict, double power) {
-    return new Language(dict, power);
+  public static Morpher language(Dictionary dict, double power, boolean shortCircuit) {
+    return new Language(dict, power, shortCircuit);
   }
 
   public static Morpher keyboard() {
     return new Keyboard(0.3);
+  }
+
+  public static Morpher split() {
+    return new Split();
   }
 }

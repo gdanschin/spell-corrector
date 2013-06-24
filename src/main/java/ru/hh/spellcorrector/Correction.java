@@ -1,16 +1,21 @@
 package ru.hh.spellcorrector;
 
-import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Correction {
 
-  private final String text;
+  private final List<String> words;
   private final double weight;
 
-  public Correction(String text, double distance) {
-    this.text = checkNotNull(text);
+  public Correction(List<String> text, double distance) {
+    checkArgument(checkNotNull(text).size() > 0);
+    this.words = text;
     this.weight = checkNotNull(distance);
   }
 
@@ -19,31 +24,19 @@ public class Correction {
   }
 
   public static Correction of(String text, double distance) {
-    return new Correction(text, distance);
+    return new Correction(Arrays.asList(text), distance);
   }
 
-  public String getText() {
-    return text;
+  public static Correction of(List<String> words, double distance) {
+    return new Correction(words, distance);
+  }
+
+  public List<String> getWords() {
+    return words;
   }
 
   public double getWeight() {
     return weight;
-  }
-
-  public static final Function<Correction, String> TEXT = new Function<Correction, String>() {
-    @Override
-    public String apply(Correction input) {
-      return input.text;
-    }
-  };
-
-  public static Function<Correction, Correction> alterDistance(final Function<Double, Double> distanceFunction) {
-    return new Function<Correction, Correction>() {
-      @Override
-      public Correction apply(Correction input) {
-        return Correction.of(input.text, distanceFunction.apply(input.weight));
-      }
-    };
   }
 
   @Override
@@ -57,16 +50,18 @@ public class Correction {
 
     Correction that = (Correction) o;
 
-    return text.equals(that.text) && (weight == that.weight);
+    return words.equals(that.words) && (weight == that.weight);
   }
 
   @Override
   public int hashCode() {
-    return 31 * text.hashCode() + Double.valueOf(weight).hashCode();
+    return 31 * words.hashCode() + Double.valueOf(weight).hashCode();
   }
+
+  private static final Joiner joiner = Joiner.on(" ");
 
   @Override
   public String toString() {
-    return weight > 0 ? text + ":" + weight : text;
+    return (words.size() > 1 ? "\"" + joiner.join(words) + "\"" : words.get(0)) + ":" + weight;
   }
 }

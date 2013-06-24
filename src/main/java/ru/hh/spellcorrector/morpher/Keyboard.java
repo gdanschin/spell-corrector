@@ -1,6 +1,6 @@
 package ru.hh.spellcorrector.morpher;
 
-import com.google.common.base.Functions;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -11,7 +11,7 @@ import static com.google.common.collect.ImmutableList.copyOf;
 import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Lists.charactersOf;
 
-class Keyboard extends FixedMultiplierMorpher {
+class Keyboard extends StringTransform {
 
   public Keyboard(double multiplier) {
     super(multiplier);
@@ -51,14 +51,23 @@ class Keyboard extends FixedMultiplierMorpher {
     return false;
   }
 
+  public Function<Character, Character> replaceFunc(final Map<Character, Character> map) {
+    return new Function<Character, Character>() {
+      @Override
+      public Character apply(Character input) {
+        return map.containsKey(input) ? map.get(input) : input;
+      }
+    };
+  }
+
   @Override
   public Iterable<String> variants(final String source) {
     List<String> result = Lists.newLinkedList();
     if (check(source, TO_RUS)) {
-      result.add(fromList(copyOf(transform(charactersOf(source), Functions.forMap(TO_RUS)))));
+      result.add(fromList(copyOf(transform(charactersOf(source), replaceFunc(TO_RUS)))));
     }
     if (check(source, TO_ENG)) {
-      result.add(fromList(copyOf(transform(charactersOf(source), Functions.forMap(TO_ENG)))));
+      result.add(fromList(copyOf(transform(charactersOf(source), replaceFunc(TO_ENG)))));
     }
     return result;
   }
