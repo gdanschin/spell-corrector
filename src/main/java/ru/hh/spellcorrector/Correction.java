@@ -1,37 +1,36 @@
 package ru.hh.spellcorrector;
 
-import com.google.common.base.Joiner;
-
-import java.util.Arrays;
 import java.util.List;
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Correction {
 
-  private final List<String> words;
+  private final Phrase phrase;
   private final double weight;
 
-  public Correction(List<String> text, double distance) {
-    checkArgument(checkNotNull(text).size() > 0);
-    this.words = text;
-    this.weight = checkNotNull(distance);
+  public Correction(Phrase phrase, double weight) {
+    this.phrase = checkNotNull(phrase);
+    this.weight = weight;
   }
 
   public static Correction of(String text) {
-    return of(text, 0);
+    return of(text, 1);
   }
 
-  public static Correction of(String text, double distance) {
-    return new Correction(Arrays.asList(text), distance);
+  public static Correction of(String text, double weight) {
+    return new Correction(Phrase.of(text), weight);
   }
 
-  public static Correction of(List<String> words, double distance) {
-    return new Correction(words, distance);
+  public static Correction of (Phrase phrase, double weight) {
+    return new Correction(phrase, weight);
   }
 
-  public List<String> getWords() {
-    return words;
+  @Deprecated public static Correction of(List<String> words, double weight) {
+    return new Correction(Phrase.of(words), weight);
+  }
+
+  public Phrase getPhrase() {
+    return phrase;
   }
 
   public double getWeight() {
@@ -48,19 +47,16 @@ public class Correction {
     }
 
     Correction that = (Correction) o;
-
-    return words.equals(that.words) && (weight == that.weight);
+    return (weight == that.weight) && phrase.equals(that.phrase);
   }
 
   @Override
   public int hashCode() {
-    return 31 * words.hashCode() + Double.valueOf(weight).hashCode();
+    return 31 * phrase.hashCode() + Double.valueOf(weight).hashCode();
   }
-
-  private static final Joiner joiner = Joiner.on(" ");
 
   @Override
   public String toString() {
-    return (words.size() > 1 ? "\"" + joiner.join(words) + "\"" : words.get(0)) + ":" + weight;
+    return phrase.toString() + ":" + weight;
   }
 }

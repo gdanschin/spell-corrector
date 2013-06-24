@@ -5,8 +5,9 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import ru.hh.spellcorrector.Correction;
+import ru.hh.spellcorrector.Phrase;
+
 import java.util.Iterator;
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -32,43 +33,45 @@ class Composition extends Morpher {
 
   private class PowerIterator extends AbstractIterator<Correction> {
 
-    final Set<List<String>> passedElements = Sets.newHashSet();
+    final Set<Phrase> passedPhrases = Sets.newHashSet();     //used for uniq
     final Iterator<? extends Morpher> morpherIt = morphers.iterator();
 
-    Iterator<Correction> source;
-    Queue<Correction> level = Lists.newLinkedList();
-    boolean memorize = true;
+    Iterator<Correction> corrections;
+    Queue<Correction> currentLevel = Lists.newLinkedList();  //used to construct new level
+    boolean lastLevel = false;
 
     public PowerIterator(Correction source) {
-      this.source = Iterators.forArray(source);
+      this.corrections = Iterators.forArray(source);
     }
 
     @Override
     protected Correction computeNext() {
-      while (morpherIt.hasNext() || source.hasNext()) {
-
-        while (source.hasNext()) {
-          Correction variant = source.next();
-          if (!passedElements.contains(variant.getWords())) {
-            if (memorize || memorizeLast) {
-              passedElements.add(variant.getWords());
-              level.add(variant);
-            }
-
-            return variant;
+      while (corrections.hasNext()) {
+        Correction correction = corrections.next();
+        if (!passedPhrases.contains(correction.getPhrase())) {
+          if (!lastLevel || memorizeLast) {
+            passedPhrases.add(correction.getPhrase());
+            currentLevel.add(correction);
           }
-        }
 
-        if (morpherIt.hasNext()) {
-          final Morpher morpher = morpherIt.next();
-          memorize = morpherIt.hasNext();
-
-          source = morpher.corrections(level).iterator();
-          level = Lists.newLinkedList();
+          return correction;
         }
       }
 
-      return endOfData();
+      return nextLevel();
+    }
+
+    private Correction nextLevel() {
+      if (!morpherIt.hasNext()) {
+        return endOfData();
+      }
+
+      Morpher morpher = morpherIt.next();
+      lastLevel = !morpherIt.hasNext();
+      corrections = morpher.corrections(currentLevel).iterator();
+      currentLevel = Lists.newLinkedList();
+
+      return computeNext();
     }
   }
 }

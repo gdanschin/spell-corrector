@@ -1,6 +1,7 @@
 package ru.hh.spellcorrector.morpher;
 
 import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -93,17 +94,15 @@ public class MorpherTest {
     assertEquals(correctionSet(compose(step, step).corrections("abcd")), expected);
   }
 
-  public static Set<String> correctionSet(Correction... corrections) {
-    return correctionSet(asList(corrections));
-  }
-
   public static Set<String> correctionSet(Iterable<? extends Correction> corrections) {
-    return set(Iterables.concat(Iterables.transform(corrections, new Function<Correction, Iterable<String>>() {
-      @Override
-      public Iterable<String> apply(Correction input) {
-        return input.getWords();
-      }
-    })));
+    return FluentIterable.from(corrections)
+        .transformAndConcat(new Function<Correction, Iterable<String>>() {
+          @Override
+          public Iterable<String> apply(Correction input) {
+            return input.getPhrase().getWords();
+          }
+        })
+        .toSet();
   }
 
   public static Set<String> set(String... word) {

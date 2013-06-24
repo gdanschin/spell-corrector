@@ -5,6 +5,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterables;
 import ru.hh.spellcorrector.Correction;
+import ru.hh.spellcorrector.Phrase;
 import ru.hh.spellcorrector.dict.Dictionary;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -31,7 +32,7 @@ class Language extends Morpher {
   final Predicate<Correction> fromDictionary = new Predicate<Correction>() {
     @Override
     public boolean apply(Correction input) {
-      return Iterables.all(input.getWords(), new Predicate<String>() {
+      return Iterables.all(input.getPhrase().getWords(), new Predicate<String>() {
         @Override
         public boolean apply(String input) {
           return dict.isKnown(input);
@@ -43,12 +44,13 @@ class Language extends Morpher {
   final Function<Correction, Correction> modifyWeight = new Function<Correction, Correction>() {
     @Override
     public Correction apply(Correction input) {
-      double weight = norm;
-      for (String word: input.getWords()) {
+      double weight = input.getWeight() * norm;
+      Phrase phrase = input.getPhrase();
+      for (String word: phrase.getWords()) {
         weight *= Math.pow(dict.getFreq(word), power) / norm;
       }
 
-      return Correction.of(input.getWords(), input.getWeight() * weight);
+      return Correction.of(phrase, weight);
     }
   };
 
@@ -67,25 +69,18 @@ class Language extends Morpher {
     double maxWeight = 0;
 
     private final Iterator<Correction> source;
-    long steps = 0;
 
     public LangIterator(Iterable<Correction> source) {
       this.source = source.iterator();
     }
 
-    protected Correction stopIteration() {
-      System.out.println(steps);
-      return endOfData();
-    }
-
     @Override
     protected Correction computeNext() {
       while (source.hasNext()) {
-        steps++;
         Correction next = source.next();
 
         if (shortCircuit && next.getWeight() * norm < maxWeight) {
-          return stopIteration();
+          return endOfData();
         }
 
         if (fromDictionary.apply(next)) {
@@ -94,7 +89,7 @@ class Language extends Morpher {
           return cur;
         }
       }
-      return stopIteration();
+      return endOfData();
     }
   }
 }

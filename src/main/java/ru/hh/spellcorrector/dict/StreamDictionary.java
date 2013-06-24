@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Math.max;
+
 public class StreamDictionary implements Dictionary {
 
   private static volatile StreamDictionary instance;
@@ -48,9 +50,13 @@ public class StreamDictionary implements Dictionary {
 
       String key = split.get(0).toLowerCase();
       double val = Double.valueOf(split.get(1));
-      maxVal = Math.max(val, maxVal);
 
-      mapBuilder.put(key, val);
+      if (mapBuilder.containsKey(key)) {
+        mapBuilder.put(key, max(val, mapBuilder.get(key)));
+      } else {
+        maxVal = max(val, maxVal);
+        mapBuilder.put(key, val);
+      }
     }
 
     dict = ImmutableMap.copyOf(mapBuilder);

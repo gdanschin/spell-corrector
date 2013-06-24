@@ -32,12 +32,11 @@ class Delete extends StringTransform {
             return input.left() + input.right().substring(1);
           }
         })
-        .filter(
-          new Predicate<String>() {
-            @Override
-            public boolean apply(String input) {
-              return input.length() > 0;
-            }
+        .filter(new Predicate<String>() {
+          @Override
+          public boolean apply(String input) {
+            return input.length() > 0;
+          }
         });
   }
 }
