@@ -5,14 +5,12 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import ru.hh.spellcorrector.Correction;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
-
-public class Composition extends Morpher {
+class Composition extends Morpher {
 
   private final Iterable<? extends Morpher> morphers;
   private final boolean memorizeLast;

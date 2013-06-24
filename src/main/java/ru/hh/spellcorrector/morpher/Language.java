@@ -6,7 +6,6 @@ import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterables;
 import ru.hh.spellcorrector.Correction;
 import ru.hh.spellcorrector.dict.Dictionary;
-
 import java.util.Arrays;
 import java.util.Iterator;
 

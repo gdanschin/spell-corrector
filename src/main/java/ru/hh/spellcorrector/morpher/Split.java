@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import ru.hh.spellcorrector.Correction;
 import ru.hh.spellcorrector.Partition;
 import ru.hh.spellcorrector.Utils;
-
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;

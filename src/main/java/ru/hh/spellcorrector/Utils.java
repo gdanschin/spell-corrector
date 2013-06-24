@@ -2,16 +2,15 @@ package ru.hh.spellcorrector;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-
+import com.google.common.collect.FluentIterable;
 import java.util.Iterator;
-
 import static com.google.common.collect.Iterables.transform;
 
 public class Utils {
 
-  public static Iterable<Partition> stringPartitions(final String string) {
+  public static FluentIterable<Partition> stringPartitions(final String string) {
     Preconditions.checkNotNull(string);
-    return new Iterable<Partition>() {
+    return new FluentIterable<Partition>() {
       @Override
       public Iterator<Partition> iterator() {
         return new PartitionIterator(string);

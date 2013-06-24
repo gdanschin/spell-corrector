@@ -5,15 +5,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import com.google.common.primitives.Doubles;
-import com.sun.org.apache.bcel.internal.generic.GOTO;
 import ru.hh.spellcorrector.dict.StreamDictionary;
 import ru.hh.spellcorrector.morpher.Morpher;
 import ru.hh.spellcorrector.morpher.Morphers;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
 import static ru.hh.spellcorrector.morpher.Morphers.delete;
 import static ru.hh.spellcorrector.morpher.Morphers.insert;
 import static ru.hh.spellcorrector.morpher.Morphers.keyboard;

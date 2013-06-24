@@ -2,7 +2,6 @@ package ru.hh.spellcorrector.morpher;
 
 import com.google.common.base.Function;
 import ru.hh.spellcorrector.Correction;
-
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.transform;
 

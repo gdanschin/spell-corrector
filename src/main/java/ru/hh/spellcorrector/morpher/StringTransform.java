@@ -4,10 +4,8 @@ import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import ru.hh.spellcorrector.Correction;
-
 import java.util.Iterator;
 import java.util.List;
-
 
 abstract class StringTransform extends Morpher {
 
