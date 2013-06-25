@@ -3,27 +3,23 @@ package ru.hh.spellcorrector.morpher;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import org.testng.annotations.Test;
 import ru.hh.spellcorrector.Correction;
-
 import java.util.Set;
-
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.transform;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static ru.hh.spellcorrector.morpher.Morphers.compose;
 import static ru.hh.spellcorrector.morpher.Morphers.delete;
-import static ru.hh.spellcorrector.morpher.Morphers.insert;
 import static ru.hh.spellcorrector.morpher.Morphers.levenshteinStep;
-import static ru.hh.spellcorrector.morpher.Morphers.replace;
+import static ru.hh.spellcorrector.morpher.Morphers.testInsert;
+import static ru.hh.spellcorrector.morpher.Morphers.testLevensteinStep;
+import static ru.hh.spellcorrector.morpher.Morphers.testReplace;
 import static ru.hh.spellcorrector.morpher.Morphers.transpose;
 
 public class MorpherTest {
-
-  static final String alphabet = "XYZ";
 
   @Test
   public void deleteTest() {
@@ -37,7 +33,7 @@ public class MorpherTest {
 
   @Test
   public void insertTest() {
-    assertEquals(correctionSet(insert(alphabet).corrections("abcd")), set(
+    assertEquals(correctionSet(testInsert("XYZ").corrections("abcd")), set(
         "abcdX", "abcdY", "abcdZ",
         "abcXd", "abcYd", "abcZd",
         "abXcd", "abYcd", "abZcd",
@@ -49,7 +45,7 @@ public class MorpherTest {
 
   @Test
   public void replaceTest() {
-    assertEquals(correctionSet(replace(alphabet).corrections("abcd")), set(
+    assertEquals(correctionSet(testReplace("XYZ").corrections("abcd")), set(
         "abcX", "abcY", "abcZ",
         "abXd", "abYd", "abZd",
         "aXcd", "aYcd", "aZcd",
@@ -60,7 +56,7 @@ public class MorpherTest {
 
   @Test
   public void levenshteinTest() {
-    assertEquals(correctionSet(levenshteinStep(alphabet).corrections("abcd")), set(
+    assertEquals(correctionSet(testLevensteinStep("XYZ").corrections("abcd")), set(
         "abc", "abd", "acd", "bcd",
         "abdc", "acbd", "bacd",
         "abcdX", "abcdY", "abcdZ",
@@ -77,10 +73,10 @@ public class MorpherTest {
 
   @Test
   public void composeLevenshteinTest() {
-    final Morpher step = levenshteinStep(alphabet);
+    final Morpher step = levenshteinStep();
 
     Set<String> expected = Sets.newHashSet("abcd");
-    expected.addAll(correctionSet(levenshteinStep(alphabet).corrections("abcd")));
+    expected.addAll(correctionSet(levenshteinStep().corrections("abcd")));
 
     assertEquals(set(expected), correctionSet(compose(step).corrections("abcd")));
 

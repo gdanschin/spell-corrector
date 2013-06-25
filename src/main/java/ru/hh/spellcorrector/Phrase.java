@@ -36,7 +36,6 @@ public class Phrase {
   public Phrase replace(Iterable<String> replace, int index) {
     checkArgument(index >= 0 && index < words.size());
     checkNotNull(replace);
-
     ImmutableList.Builder builder = ImmutableList.builder();
     Iterator<String> wordIterator = words.iterator();
 

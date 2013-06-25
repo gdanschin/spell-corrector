@@ -1,6 +1,4 @@
 package ru.hh.spellcorrector;
-
-import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Correction {
@@ -23,10 +21,6 @@ public class Correction {
 
   public static Correction of (Phrase phrase, double weight) {
     return new Correction(phrase, weight);
-  }
-
-  @Deprecated public static Correction of(List<String> words, double weight) {
-    return new Correction(Phrase.of(words), weight);
   }
 
   public Phrase getPhrase() {

@@ -1,24 +1,31 @@
 package ru.hh.spellcorrector.morpher;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import ru.hh.spellcorrector.Partition;
-
+import java.util.Collections;
+import java.util.Set;
 import static ru.hh.spellcorrector.Utils.stringPartitions;
 
 class Replace extends StringTransform {
 
-  private final ImmutableList<Character> alphabet;
+  private final Charsets charsets;
 
-  Replace(String alphabet) {
-    this.alphabet = Lists.charactersOf(alphabet);
+  Replace(Charsets charsets) {
+    this.charsets = charsets;
   }
+
 
   @Override
   public Iterable<String> variants(final String source) {
+    final Optional<Set<Character>> charset = charsets.guess(source);
+
+    if (!charset.isPresent()) {
+      return Collections.emptyList();
+    }
+
     return stringPartitions(source)
         .filter(new Predicate<Partition>() {
           @Override
@@ -29,7 +36,7 @@ class Replace extends StringTransform {
         .transformAndConcat(new Function<Partition, Iterable<String>>() {
           @Override
           public Iterable<String> apply(final Partition partition) {
-            return Iterables.transform(alphabet, new Function<Character, String>() {
+            return Iterables.transform(charset.get(), new Function<Character, String>() {
               @Override
               public String apply(Character character) {
                 return partition.left() + character + partition.right().substring(1);

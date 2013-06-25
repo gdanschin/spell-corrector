@@ -61,7 +61,8 @@ class Keyboard extends StringTransform {
 
   @Override
   public Iterable<String> variants(final String source) {
-    List<String> result = Lists.newLinkedList();
+    List<String> result = Lists.newArrayList();
+    result.add(source);
     if (check(source, TO_RUS)) {
       result.add(fromList(copyOf(transform(charactersOf(source), replaceFunc(TO_RUS)))));
     }
