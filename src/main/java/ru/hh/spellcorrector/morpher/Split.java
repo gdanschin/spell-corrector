@@ -51,7 +51,7 @@ class Split extends Morpher {
     protected Correction computeNext() {
       if (variants.hasNext()) {
         Partition variant = variants.next();
-        return Correction.of(phrase.replace(asList(variant.left(), variant.right()), index), weight);
+        return Correction.of(phrase.replace(variant, index), weight);
       }
       return nextWord();
     }

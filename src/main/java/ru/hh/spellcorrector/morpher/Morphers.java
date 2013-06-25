@@ -12,11 +12,11 @@ import static ru.hh.spellcorrector.morpher.Charsets.RUS;
 public class Morphers {
 
   public static Morpher levenshteinStep() {
-    return sum(delete(), transpose(), insert(), replace());
+    return sum(delete(), transpose(), insert(), replace(), split());
   }
 
   static Morpher testLevensteinStep(String alphabet) {
-    return sum(delete(), transpose(), testInsert(alphabet), testReplace(alphabet));
+    return sum(delete(), transpose(), testInsert(alphabet), testReplace(alphabet), split());
   }
 
   public static Morpher delete() {

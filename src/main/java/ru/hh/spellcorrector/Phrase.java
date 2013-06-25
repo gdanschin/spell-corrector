@@ -1,14 +1,10 @@
 package ru.hh.spellcorrector;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-
-import java.util.Iterator;
+import com.google.common.collect.Lists;
 import java.util.List;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Iterators.advance;
-import static com.google.common.collect.Iterators.limit;
 import static java.util.Arrays.asList;
 
 public class Phrase {
@@ -30,21 +26,32 @@ public class Phrase {
   }
 
   public Phrase replace(String replace, int index) {
-    return replace(asList(checkNotNull(replace)), index);
+    checkArgument(index >= 0 && index < words.size());
+
+    if (singeWord()) {
+      return Phrase.of(replace);
+    }
+
+    List<String> phrase = Lists.newArrayList(words);
+    phrase.set(index, replace);
+    return Phrase.of(phrase);
   }
 
-  public Phrase replace(Iterable<String> replace, int index) {
+  public Phrase replace(Partition partition, int index) {
     checkArgument(index >= 0 && index < words.size());
-    checkNotNull(replace);
-    ImmutableList.Builder builder = ImmutableList.builder();
-    Iterator<String> wordIterator = words.iterator();
 
-    builder.addAll(limit(wordIterator, index));
-    builder.addAll(replace);
-    advance(wordIterator, 1);
-    builder.addAll(wordIterator);
+    if (singeWord()) {
+      return Phrase.of(asList(partition.left(), partition.right()));
+    }
 
-    return new Phrase(builder.build());
+    List<String> phrase = Lists.newArrayList(words);
+    phrase.set(index, partition.left());
+    phrase.add(index + 1, partition.right());
+    return Phrase.of(phrase);
+  }
+
+  private boolean singeWord() {
+    return words.size() == 1;
   }
 
   public List<String> getWords() {

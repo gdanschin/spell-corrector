@@ -11,12 +11,8 @@ public class Correction {
     this.weight = weight;
   }
 
-  public static Correction of(String text) {
-    return of(text, 1);
-  }
-
-  public static Correction of(String text, double weight) {
-    return new Correction(Phrase.of(text), weight);
+  public static Correction of(Phrase phrase) {
+    return of(phrase, 1);
   }
 
   public static Correction of (Phrase phrase, double weight) {
