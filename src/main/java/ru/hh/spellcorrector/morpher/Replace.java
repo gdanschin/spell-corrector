@@ -1,13 +1,10 @@
 package ru.hh.spellcorrector.morpher;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import ru.hh.spellcorrector.Partition;
+import com.google.common.collect.AbstractIterator;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
-import static ru.hh.spellcorrector.Utils.stringPartitions;
 
 class Replace extends StringTransform {
 
@@ -17,7 +14,6 @@ class Replace extends StringTransform {
     this.charsets = charsets;
   }
 
-
   @Override
   public Iterable<String> variants(final String source) {
     final Optional<Set<Character>> charset = charsets.guess(source);
@@ -26,30 +22,55 @@ class Replace extends StringTransform {
       return Collections.emptyList();
     }
 
-    return stringPartitions(source)
-        .filter(new Predicate<Partition>() {
-          @Override
-          public boolean apply(Partition input) {
-            return input.right().length() > 0;
-          }
-        })
-        .transformAndConcat(new Function<Partition, Iterable<String>>() {
-          @Override
-          public Iterable<String> apply(final Partition partition) {
-            return Iterables.transform(charset.get(), new Function<Character, String>() {
-              @Override
-              public String apply(Character character) {
-                return partition.left() + character + partition.right().substring(1);
-              }
-            });
-          }
-        })
-        .filter(new Predicate<String>() {
-          @Override
-          public boolean apply(String input) {
-            return !input.equals(source);
-          }
-        });
+    return new Iterable<String>() {
+      @Override
+      public Iterator<String> iterator() {
+        return new ReplaceIterator(source, charset.get());
+      }
+    };
+  }
+
+  static class ReplaceIterator extends AbstractIterator<String> {
+
+    final char[] raw;
+
+    int index = 0;
+    char current;
+
+    final Set<Character> charset;
+    Iterator<Character> charIterator;
+
+    ReplaceIterator(String source, Set<Character> charset) {
+      raw = source.toCharArray();
+      this.charset = charset;
+      updateState();
+    }
+
+    @Override
+    protected String computeNext() {
+      while (charIterator.hasNext()) {
+        char next = charIterator.next();
+        if (next != current) {
+          raw[index] = next;
+          return new String(raw);
+        }
+      }
+      return nextIndex();
+    }
+
+    private String nextIndex() {
+      raw[index] = current;
+      if (++index >= raw.length) {
+        return endOfData();
+      }
+      updateState();
+      return computeNext();
+    }
+
+    private void updateState() {
+      current = raw[index];
+      charIterator = charset.iterator();
+    }
   }
 
 }

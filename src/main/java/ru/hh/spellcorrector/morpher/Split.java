@@ -7,7 +7,6 @@ import ru.hh.spellcorrector.Correction;
 import ru.hh.spellcorrector.Partition;
 import ru.hh.spellcorrector.Phrase;
 import java.util.Iterator;
-import static java.util.Arrays.asList;
 import static ru.hh.spellcorrector.Utils.stringPartitions;
 
 class Split extends Morpher {

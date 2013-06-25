@@ -4,8 +4,13 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import org.omg.CORBA.PUBLIC_MEMBER;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import static com.google.common.collect.ImmutableList.copyOf;
 import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Lists.charactersOf;
@@ -59,16 +64,21 @@ class Keyboard extends StringTransform {
     };
   }
 
+  public String toAnotherCharset(String from, Map<Character, Character> transform) {
+    char[] result = new char[from.length()];
+    for (int i = 0; i < from.length(); i++) {
+      Character c = transform.get(from.charAt(i));
+      result[i] = c != null ? c : from.charAt(i);
+    }
+    return new String(result);
+  }
+
   @Override
   public Iterable<String> variants(final String source) {
-    List<String> result = Lists.newArrayList();
+    Set<String> result = Sets.newHashSetWithExpectedSize(3);
     result.add(source);
-    if (check(source, TO_RUS)) {
-      result.add(fromList(copyOf(transform(charactersOf(source), replaceFunc(TO_RUS)))));
-    }
-    if (check(source, TO_ENG)) {
-      result.add(fromList(copyOf(transform(charactersOf(source), replaceFunc(TO_ENG)))));
-    }
+    result.add(toAnotherCharset(source, TO_RUS));
+    result.add(toAnotherCharset(source, TO_ENG));
     return result;
   }
 }
