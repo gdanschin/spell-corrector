@@ -11,12 +11,12 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
 
-class Composition extends Morpher {
+class Pipe extends Morpher {
 
   private final Iterable<? extends Morpher> morphers;
   private final boolean memorizeLast;
 
-  Composition(Iterable<? extends Morpher> morpher, boolean memorizeLast) {
+  Pipe(Iterable<? extends Morpher> morpher, boolean memorizeLast) {
     this.morphers = morpher;
     this.memorizeLast = memorizeLast;
   }
@@ -26,21 +26,23 @@ class Composition extends Morpher {
     return new Iterable<Correction>() {
       @Override
       public Iterator<Correction> iterator() {
-        return new PowerIterator(source);
+        return new PipeIterator(source);
       }
     };
   }
 
-  private class PowerIterator extends AbstractIterator<Correction> {
+  private class PipeIterator extends AbstractIterator<Correction> {
 
-    final Set<Phrase> passedPhrases = Sets.newHashSet();     //used for uniq
+
     final Iterator<? extends Morpher> morpherIt = morphers.iterator();
 
     Iterator<Correction> corrections;
+
+    Set<Phrase> currentPhrases = Sets.newHashSet();    //used for uniq
     Queue<Correction> currentLevel = Lists.newLinkedList();  //used to construct new level
     boolean lastLevel = false;
 
-    public PowerIterator(Correction source) {
+    public PipeIterator(Correction source) {
       this.corrections = Iterators.forArray(source);
     }
 
@@ -48,9 +50,9 @@ class Composition extends Morpher {
     protected Correction computeNext() {
       while (corrections.hasNext()) {
         Correction correction = corrections.next();
-        if (!passedPhrases.contains(correction.getPhrase())) {
+        if (!currentPhrases.contains(correction.getPhrase())) {
           if (!lastLevel || memorizeLast) {
-            passedPhrases.add(correction.getPhrase());
+            currentPhrases.add(correction.getPhrase());
             currentLevel.add(correction);
           }
 
@@ -70,6 +72,7 @@ class Composition extends Morpher {
       lastLevel = !morpherIt.hasNext();
       corrections = morpher.corrections(currentLevel).iterator();
       currentLevel = Lists.newLinkedList();
+      currentPhrases = Sets.newHashSet();
 
       return computeNext();
     }

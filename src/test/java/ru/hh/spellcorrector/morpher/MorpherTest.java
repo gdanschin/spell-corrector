@@ -3,13 +3,10 @@ package ru.hh.spellcorrector.morpher;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import org.testng.annotations.Test;
 import ru.hh.spellcorrector.Correction;
 import ru.hh.spellcorrector.Phrase;
-
-import java.util.List;
 import java.util.Set;
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.transform;
@@ -84,7 +81,7 @@ public class MorpherTest {
     Set<Phrase> expected = Sets.newHashSet(phrase("abcd"));
     expected.addAll(correctionSet(levenshteinStep().corrections(phrase("abcd"))));
 
-    assertEquals(expected, correctionSet(compose(step).corrections(phrase("abcd"))));
+    assertEquals(expected, correctionSet(pipe(step).corrections(phrase("abcd"))));
 
     expected.addAll(correctionSet(concat(transform(expected, new Function<Phrase, Iterable<Correction>>() {
       @Override
@@ -93,7 +90,7 @@ public class MorpherTest {
       }
     }))));
 
-    assertEquals(correctionSet(compose(step, step).corrections(phrase("abcd"))), expected);
+    assertEquals(correctionSet(pipe(step, step).corrections(phrase("abcd"))), expected);
   }
 
   public static Set<Phrase> correctionSet(Iterable<? extends Correction> corrections) {

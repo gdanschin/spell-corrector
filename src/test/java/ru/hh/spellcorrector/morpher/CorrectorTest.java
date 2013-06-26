@@ -2,22 +2,17 @@ package ru.hh.spellcorrector.morpher;
 
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import ru.hh.spellcorrector.SpellCorrector;
 import ru.hh.spellcorrector.dict.StreamDictionary;
-
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import static ru.hh.spellcorrector.morpher.Morphers.compose;
+import static ru.hh.spellcorrector.morpher.Morphers.charset;
 import static ru.hh.spellcorrector.morpher.Morphers.delete;
 import static ru.hh.spellcorrector.morpher.Morphers.insert;
-import static ru.hh.spellcorrector.morpher.Morphers.keyboard;
+import static ru.hh.spellcorrector.morpher.Morphers.pipe;
 import static ru.hh.spellcorrector.morpher.Morphers.replace;
 import static ru.hh.spellcorrector.morpher.Morphers.split;
 import static ru.hh.spellcorrector.morpher.Morphers.sum;
@@ -25,41 +20,35 @@ import static ru.hh.spellcorrector.morpher.Morphers.transpose;
 
 public class CorrectorTest {
 
-//  public static final String alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyz";
-  public static final String alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-
   @Test
   public void testPerfomance() throws IOException {
     StreamDictionary.load(CorrectorTest.class.getResourceAsStream("/corrections"));
 
-    Morpher step1 = sum(keyboard(), delete(), replace(), insert(), transpose(), split());
-    Morpher step2 = sum(keyboard(), delete(), transpose(), split());
-    Morpher morpher = compose(step1, step2);
-
     Map<String, Morpher> morphers = ImmutableMap.<String, Morpher>builder()
-        .put("full", compose(step1, step2))
-//        .put("step1", step1)
-//        .put("compose", compose(step1))
-//        .put("slowCompose", slowCompose(step1))
+        .put("Cut", pipe(
+            sum(delete(), transpose(), replace(), insert(), charset(), split()),
+            sum(delete(), transpose(), charset(), split())
+        ))
+        .put("CutOpt", sum(
+            pipe(delete(), sum(delete(), transpose(), replace(), insert(), split())),
+            pipe(transpose(), sum(transpose(), replace(), insert(), split())),
+            pipe(replace(), split()),
+            pipe(insert(), split()),
+            pipe(charset(), sum(delete(), transpose(), replace(), insert())),
+            pipe(split(), sum(charset(), split()))
+        ))
         .build();
 
-//    while(true) {
     for (Map.Entry<String, Morpher> entry : morphers.entrySet()) {
       System.out.println(entry.getKey());
-      for (int time : runQuery(entry.getValue(), 20, 100, "ghjuhfvvbcn")) {
+      for (int time : runQuery(entry.getValue(), 20, 1000, "программияя")) {
         System.out.println(time);
       }
     }
-//      try {
-//        TimeUnit.MILLISECONDS.sleep(200);
-//      } catch (InterruptedException e) {
-//        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//      }
-//    }
   }
 
   public Iterable<Integer> runQuery(Morpher morpher, final int times, final int cycles, final String query) {
-    final SpellCorrector corrector = SpellCorrector.of(morpher, StreamDictionary.getInstance(), true);
+    final SpellCorrector corrector = SpellCorrector.of(morpher, StreamDictionary.getInstance(), false);
 
     return new Iterable<Integer>() {
       @Override

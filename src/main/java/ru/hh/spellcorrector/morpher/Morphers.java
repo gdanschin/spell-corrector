@@ -12,7 +12,18 @@ import static ru.hh.spellcorrector.morpher.Charsets.RUS;
 public class Morphers {
 
   public static Morpher levenshteinStep() {
-    return sum(delete(), transpose(), insert(), replace(), split());
+    return sum(delete(), transpose(), insert(), replace(), charset(), split());
+  }
+
+  public static Morpher levenshteinSquared() {
+    return sum(
+        pipe(delete(), sum(delete(), transpose(), replace(), insert(), split())),
+        pipe(transpose(), sum(transpose(), replace(), insert(), split())),
+        pipe(replace(), sum(replace(), insert(), split())),
+        pipe(insert(), sum(insert(), split())),
+        pipe(charset(), sum(delete(), transpose(), replace(), insert())),
+        pipe(split(), sum(charset(), split()))
+    );
   }
 
   static Morpher testLevensteinStep(String alphabet) {
@@ -76,20 +87,12 @@ public class Morphers {
     return new Sum(morphers);
   }
 
-  public static Morpher compose(Morpher... morphers) {
-    return compose(asList(morphers));
+  public static Morpher pipe(Morpher... morphers) {
+    return pipe(asList(morphers));
   }
 
-  public static Morpher compose(Iterable<? extends Morpher> morphers) {
-    return new Composition(morphers, false);
-  }
-
-  public static Morpher slowCompose(Morpher... morphers) {
-    return slowCompose(asList(morphers));
-  }
-
-  public static Morpher slowCompose(Iterable<? extends Morpher> morphers) {
-    return new Composition(morphers, true);
+  public static Morpher pipe(Iterable<? extends Morpher> morphers) {
+    return new Pipe(morphers, false);
   }
 
   public static Morpher language(Dictionary dict, boolean shortCircuit) {
@@ -100,7 +103,7 @@ public class Morphers {
     return new Language(dict, power, shortCircuit);
   }
 
-  public static Morpher keyboard() {
+  public static Morpher charset() {
     return new Keyboard(0.3);
   }
 
