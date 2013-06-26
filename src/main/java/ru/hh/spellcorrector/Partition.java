@@ -1,19 +1,19 @@
 package ru.hh.spellcorrector;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Partition {
 
   private final String left;
   private final String right;
 
-  public Partition(String left, String right) {
-    this.left = Preconditions.checkNotNull(left);
-    this.right = Preconditions.checkNotNull(right);
+  private Partition(String left, String right) {
+    this.left = checkNotNull(left);
+    this.right = checkNotNull(right);
   }
 
   public static Partition of(String left, String right) {
-    return new Partition(left, right);
+    return new Partition(checkNotNull(left), checkNotNull(right));
   }
 
   public String left() {

@@ -1,6 +1,8 @@
 package ru.hh.spellcorrector.morpher;
 
 import com.google.common.collect.AbstractIterator;
+
+import java.util.Collections;
 import java.util.Iterator;
 
 class Delete extends StringTransform {
@@ -16,6 +18,9 @@ class Delete extends StringTransform {
 
   @Override
   protected Iterable<String> variants(final String source) {
+    if (source.length() <= 1) {
+      return Collections.emptyList();
+    }
     return new Iterable<String>() {
       @Override
       public Iterator<String> iterator() {

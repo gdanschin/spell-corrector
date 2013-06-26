@@ -48,9 +48,11 @@ class Split extends Morpher {
 
     @Override
     protected Correction computeNext() {
-      if (variants.hasNext()) {
+      while (variants.hasNext()) {
         Partition variant = variants.next();
-        return Correction.of(phrase.replace(variant, index), weight);
+        if (variant.left().length() > 0 && variant.right().length() > 0) {
+          return Correction.of(phrase.replace(variant, index), weight);
+        }
       }
       return nextWord();
     }

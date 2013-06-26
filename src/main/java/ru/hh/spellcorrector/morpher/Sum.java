@@ -21,4 +21,14 @@ class Sum extends Morpher {
       }
     });
   }
+
+  @Override
+  public Iterable<Correction> corrections(final Iterable<Correction> sources) {
+    return children.transformAndConcat(new Function<Morpher, Iterable<Correction>>() {
+      @Override
+      public Iterable<Correction> apply(Morpher input) {
+        return input.corrections(sources);
+      }
+    });
+  }
 }

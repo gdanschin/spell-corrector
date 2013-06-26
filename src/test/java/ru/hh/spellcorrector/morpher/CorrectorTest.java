@@ -43,12 +43,19 @@ public class CorrectorTest {
 //        .put("slowCompose", slowCompose(step1))
         .build();
 
+//    while(true) {
     for (Map.Entry<String, Morpher> entry : morphers.entrySet()) {
       System.out.println(entry.getKey());
       for (int time : runQuery(entry.getValue(), 20, 100, "ghjuhfvvbcn")) {
         System.out.println(time);
       }
     }
+//      try {
+//        TimeUnit.MILLISECONDS.sleep(200);
+//      } catch (InterruptedException e) {
+//        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//      }
+//    }
   }
 
   public Iterable<Integer> runQuery(Morpher morpher, final int times, final int cycles, final String query) {

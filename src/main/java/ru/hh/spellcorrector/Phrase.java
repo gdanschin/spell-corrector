@@ -3,8 +3,6 @@ package ru.hh.spellcorrector;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import java.util.List;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Arrays.asList;
 
 public class Phrase {
@@ -16,18 +14,14 @@ public class Phrase {
   }
 
   public static Phrase of(String word) {
-    return of(asList(checkNotNull(word)));
+    return new Phrase(asList(word));
   }
 
   public static Phrase of(List<String> words) {
-    checkNotNull(words);
-    checkArgument(words.size() > 0);
     return new Phrase(words);
   }
 
   public Phrase replace(String replace, int index) {
-    checkArgument(index >= 0 && index < words.size());
-
     if (singeWord()) {
       return Phrase.of(replace);
     }
@@ -38,8 +32,6 @@ public class Phrase {
   }
 
   public Phrase replace(Partition partition, int index) {
-    checkArgument(index >= 0 && index < words.size());
-
     if (singeWord()) {
       return Phrase.of(asList(partition.left(), partition.right()));
     }

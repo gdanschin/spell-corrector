@@ -33,9 +33,9 @@ class Transpose extends StringTransform {
     }
 
     private void swap(int first, int second) {
-      char temp = raw[first];
-      raw[first] = raw[second];
-      raw[second] = temp;
+      raw[first] = (char) (raw[first] ^ raw[second]);
+      raw[second] = (char) (raw[first] ^ raw[second]);
+      raw[first] = (char) (raw[first] ^ raw[second]);
     }
 
     @Override
