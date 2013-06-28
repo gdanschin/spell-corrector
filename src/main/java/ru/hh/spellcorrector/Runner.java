@@ -2,10 +2,8 @@ package ru.hh.spellcorrector;
 
 import ru.hh.spellcorrector.dict.StreamDictionary;
 import java.io.IOException;
-import static ru.hh.spellcorrector.morpher.Morphers.levenshteinSquared;
-public class Runner {
 
-  public static final String alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyz";
+public class Runner {
 
   public static void main(String[] args) {
     try {
@@ -16,9 +14,6 @@ public class Runner {
     }
 
     System.out.println("Initialized dictionary");
-
-
-    System.out.println(SpellCorrector.of(levenshteinSquared(), StreamDictionary.getInstance(), false).correct("вокансея"));
   }
 
 }

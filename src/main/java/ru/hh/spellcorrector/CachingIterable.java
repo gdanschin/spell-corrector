@@ -14,7 +14,7 @@ public class CachingIterable<T> implements Iterable<T> {
   }
 
   private final Iterator<? extends T> source;
-  private List<T> storage = Lists.newArrayList();
+  private List<T> storage = Lists.newLinkedList();
   private Master master = new Master();
 
   CachingIterable(Iterator<? extends T> source) {
@@ -56,7 +56,6 @@ public class CachingIterable<T> implements Iterable<T> {
   }
 
   private class Slave extends UnmodifiableIterator<T> {
-
     int index = 0;
 
     @Override

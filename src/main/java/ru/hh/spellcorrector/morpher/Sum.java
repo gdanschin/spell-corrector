@@ -8,7 +8,7 @@ class Sum extends Morpher {
 
   private final FluentIterable<? extends Morpher> children;
 
-  public Sum(Iterable<? extends Morpher> children) {
+  Sum(Iterable<? extends Morpher> children) {
     this.children = FluentIterable.from(children);
   }
 

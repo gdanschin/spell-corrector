@@ -13,6 +13,7 @@ import static com.google.common.collect.Iterables.transform;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static ru.hh.spellcorrector.morpher.Morphers.*;
+import static ru.hh.spellcorrector.TreeNode.node;
 
 public class MorpherTest {
 
@@ -75,14 +76,20 @@ public class MorpherTest {
   }
 
   @Test
-  public void composeLevenshteinTest() {
-    final Morpher step = levenshteinStep();
+  public void optimizeLevenshteinTest() {
+    final Morpher step = sum(delete(), transpose(), insert(), replace(), split());
+
+    Morpher optimized =  tree(node(identity(),
+        node(delete(), delete(), transpose(), replace(), insert(), split()),
+        node(transpose(), transpose(), replace(), insert(), split()),
+        node(replace(), replace(), insert(), split()),
+        node(insert(), insert(), split()),
+        node(split(), split()))
+    );
+
 
     Set<Phrase> expected = Sets.newHashSet(phrase("abcd"));
-    expected.addAll(correctionSet(levenshteinStep().corrections(phrase("abcd"))));
-
-    assertEquals(expected, correctionSet(pipe(step).corrections(phrase("abcd"))));
-
+    expected.addAll(correctionSet(step.corrections(phrase("abcd"))));
     expected.addAll(correctionSet(concat(transform(expected, new Function<Phrase, Iterable<Correction>>() {
       @Override
       public Iterable<Correction> apply(Phrase input) {
@@ -90,7 +97,7 @@ public class MorpherTest {
       }
     }))));
 
-    assertEquals(correctionSet(pipe(step, step).corrections(phrase("abcd"))), expected);
+    assertEquals(correctionSet(optimized.corrections(phrase("abcd"))), expected);
   }
 
   public static Set<Phrase> correctionSet(Iterable<? extends Correction> corrections) {

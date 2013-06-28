@@ -2,27 +2,34 @@ package ru.hh.spellcorrector.morpher;
 
 import com.google.common.base.Optional;
 import ru.hh.spellcorrector.dict.Dictionary;
-
+import ru.hh.spellcorrector.TreeNode;
 import java.util.Set;
-
 import static java.util.Arrays.asList;
 import static ru.hh.spellcorrector.morpher.Charsets.ENG;
 import static ru.hh.spellcorrector.morpher.Charsets.RUS;
+import static ru.hh.spellcorrector.TreeNode.node;
 
 public class Morphers {
 
-  public static Morpher levenshteinStep() {
-    return sum(delete(), transpose(), insert(), replace(), charset(), split());
+  public static Morpher fullDoubleSteps() {
+    return tree(node(identity(),
+        node(delete(), delete(), transpose(), replace(), insert(), split()),
+        node(transpose(), transpose(), replace(), insert(), split()),
+        node(replace(), replace(), insert(), split()),
+        node(insert(), insert(), split()),
+        node(charset(), delete(), transpose(), replace(), insert(), split()),
+        node(split(), charset(), split()))
+    );
   }
 
-  public static Morpher levenshteinSquared() {
-    return sum(
-        pipe(delete(), sum(delete(), transpose(), replace(), insert(), split())),
-        pipe(transpose(), sum(transpose(), replace(), insert(), split())),
-        pipe(replace(), sum(replace(), insert(), split())),
-        pipe(insert(), sum(insert(), split())),
-        pipe(charset(), sum(delete(), transpose(), replace(), insert())),
-        pipe(split(), sum(charset(), split()))
+  public static Morpher cutDoubleSteps() {
+    return tree(node(identity(),
+        node(delete(), delete(), transpose(), replace(), insert(), split()),
+        node(transpose(), transpose(), replace(), insert(), split()),
+        node(replace(),split()),
+        node(insert(), split()),
+        node(charset(), delete(), transpose(), replace(), insert(), split()),
+        node(split(), charset(), split()))
     );
   }
 
@@ -87,12 +94,8 @@ public class Morphers {
     return new Sum(morphers);
   }
 
-  public static Morpher pipe(Morpher... morphers) {
-    return pipe(asList(morphers));
-  }
-
-  public static Morpher pipe(Iterable<? extends Morpher> morphers) {
-    return new Pipe(morphers, false);
+  public static Morpher tree(TreeNode<? extends Morpher> chain) {
+    return new TreeChain(chain);
   }
 
   public static Morpher language(Dictionary dict, boolean shortCircuit) {
@@ -104,10 +107,14 @@ public class Morphers {
   }
 
   public static Morpher charset() {
-    return new Keyboard(0.3);
+    return new Keyboard(0.1);
   }
 
   public static Morpher split() {
     return new Split();
+  }
+
+  public static Morpher identity() {
+    return Identity.instance();
   }
 }

@@ -1,77 +1,87 @@
 package ru.hh.spellcorrector.morpher;
 
-import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.ImmutableMap;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ru.hh.spellcorrector.SpellCorrector;
 import ru.hh.spellcorrector.dict.StreamDictionary;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
 
-import static ru.hh.spellcorrector.morpher.Morphers.charset;
-import static ru.hh.spellcorrector.morpher.Morphers.delete;
-import static ru.hh.spellcorrector.morpher.Morphers.insert;
-import static ru.hh.spellcorrector.morpher.Morphers.pipe;
-import static ru.hh.spellcorrector.morpher.Morphers.replace;
-import static ru.hh.spellcorrector.morpher.Morphers.split;
-import static ru.hh.spellcorrector.morpher.Morphers.sum;
-import static ru.hh.spellcorrector.morpher.Morphers.transpose;
-
+import static org.testng.Assert.assertEquals;
+import static ru.hh.spellcorrector.morpher.Morphers.cutDoubleSteps;
 public class CorrectorTest {
 
+  private static final String TEST_DICT =
+      "дизъюнкция|2.3\n" +
+      "рыбная|14.24\n" +
+      "ловля|7.2\n" +
+      "двигатель|68.4\n" +
+      "внутреннего|172.16\n" +
+      "сгорания|4.48\n" +
+      "test|10000.0\n" ;
+
+  @BeforeClass
+  public static void initDictionary() throws IOException {
+    StreamDictionary.load(new ByteArrayInputStream(TEST_DICT.getBytes("utf-8")));
+  }
+
+  private SpellCorrector corrector;
+
+  @BeforeMethod
+  public void intiCorrector() {
+    corrector = SpellCorrector.of(cutDoubleSteps(), StreamDictionary.getInstance(), true);
+  }
+
   @Test
-  public void testPerfomance() throws IOException {
-    StreamDictionary.load(CorrectorTest.class.getResourceAsStream("/corrections"));
-
-    Map<String, Morpher> morphers = ImmutableMap.<String, Morpher>builder()
-        .put("Cut", pipe(
-            sum(delete(), transpose(), replace(), insert(), charset(), split()),
-            sum(delete(), transpose(), charset(), split())
-        ))
-        .put("CutOpt", sum(
-            pipe(delete(), sum(delete(), transpose(), replace(), insert(), split())),
-            pipe(transpose(), sum(transpose(), replace(), insert(), split())),
-            pipe(replace(), split()),
-            pipe(insert(), split()),
-            pipe(charset(), sum(delete(), transpose(), replace(), insert())),
-            pipe(split(), sum(charset(), split()))
-        ))
-        .build();
-
-    for (Map.Entry<String, Morpher> entry : morphers.entrySet()) {
-      System.out.println(entry.getKey());
-      for (int time : runQuery(entry.getValue(), 20, 1000, "программияя")) {
-        System.out.println(time);
-      }
-    }
+  public void testIdentity() {
+    assertEquals(corrector.correct("дизъюнкция".toLowerCase()), "дизъюнкция");
   }
 
-  public Iterable<Integer> runQuery(Morpher morpher, final int times, final int cycles, final String query) {
-    final SpellCorrector corrector = SpellCorrector.of(morpher, StreamDictionary.getInstance(), false);
-
-    return new Iterable<Integer>() {
-      @Override
-      public Iterator<Integer> iterator() {
-        return new AbstractIterator<Integer>() {
-          int i = 0;
-
-          @Override
-          protected Integer computeNext() {
-            if (i++ >= times) {
-              return endOfData();
-            }
-
-            long start = System.currentTimeMillis();
-            for (int j = 0; j < cycles; j++) {
-              corrector.correct(query);
-            }
-            long end = System.currentTimeMillis();
-            return (int) (end - start);
-          }
-        };
-      }
-    };
+  @Test
+  public void testDelete() {
+    assertEquals(corrector.correct("Ъдизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("дизъЪюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("дизъюнкцияЪ".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("дизъЯюнкцияУ".toLowerCase()), "дизъюнкция");
   }
+
+  @Test
+  public void testTranspose() {
+    assertEquals(corrector.correct("ИДзъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("дизъюнкцИЯ".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("дизЮЪнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("ИДзъюКНция".toLowerCase()), "дизъюнкция");
+  }
+
+  @Test
+  public void testReplace() {
+    assertEquals(corrector.correct("Иизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("Цизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("дизЦюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("дизъюнкциЦ".toLowerCase()), "дизъюнкция");
+  }
+
+  @Test
+  public void testInsert() {
+    assertEquals(corrector.correct("Ддизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("Цдизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("дизъЦюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correct("дизъюнкцияЦ".toLowerCase()), "дизъюнкция");
+  }
+
+  @Test
+  public void testSplit() {
+    assertEquals(corrector.correct("рыбнаяловля"), "рыбная ловля");
+    assertEquals(corrector.correct("двигательвнутреннегосгорания"), "двигатель внутреннего сгорания");
+  }
+
+  @Test
+  public void testCharset() {
+    assertEquals(corrector.correct("lbp].yrwbz"), "дизъюнкция");
+    assertEquals(corrector.correct("hs,yfzkjdkz"), "рыбная ловля");
+    assertEquals(corrector.correct("рыбнаяkjdkz"), "рыбная ловля");
+  }
+
 }
 

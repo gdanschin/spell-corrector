@@ -5,15 +5,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static com.google.common.collect.ImmutableList.copyOf;
-import static com.google.common.collect.Iterables.transform;
-import static com.google.common.collect.Lists.charactersOf;
 
 class Keyboard extends StringTransform {
 

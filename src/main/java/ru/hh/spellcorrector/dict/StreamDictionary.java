@@ -99,7 +99,7 @@ public class StreamDictionary implements Dictionary {
   @Override
   public boolean isKnown(String word) {
     int index = word.length() - 1;
-    if (index > dict.length) {
+    if (index >= dict.length) {
       return false;
     } else {
       return dict[index].containsKey(word);
