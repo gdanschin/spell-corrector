@@ -2,6 +2,8 @@ package ru.hh.spellcorrector.morpher;
 
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.ImmutableMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 import ru.hh.spellcorrector.SpellCorrector;
 import ru.hh.spellcorrector.dict.StreamDictionary;
@@ -15,6 +17,8 @@ import static ru.hh.spellcorrector.morpher.Morphers.fullDoubleSteps;
 
 public class PerfomanceTest {
 
+  private static final Logger log = LoggerFactory.getLogger(PerfomanceTest.class);
+
   @Test(enabled = false)
   public void testPerfomance() throws IOException {
     StreamDictionary.load(PerfomanceTest.class.getResourceAsStream("/corrections"));
@@ -25,9 +29,10 @@ public class PerfomanceTest {
         .build();
 
     for (Map.Entry<String, Morpher> entry : morphers.entrySet()) {
-      System.out.println(entry.getKey());
-      for (int time : runQuery(entry.getValue(), 20, 1000, "ghjuhfvvbcn")) {
-        System.out.println(time);
+      log.debug("Profiling morpher {}", entry.getKey());
+
+      for (int time : runQuery(entry.getValue(), 20, 100, "ghjuhfvvbcn")) {
+        log.debug("time: {}", time);
       }
     }
   }
@@ -49,7 +54,7 @@ public class PerfomanceTest {
 
             long start = System.currentTimeMillis();
             for (int j = 0; j < cycles; j++) {
-              corrector.correct(query);
+              corrector.correctWord(query);
             }
             long end = System.currentTimeMillis();
             return (int) (end - start);

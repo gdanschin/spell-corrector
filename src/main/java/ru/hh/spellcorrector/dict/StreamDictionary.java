@@ -5,11 +5,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,8 @@ import java.util.Map;
 import static java.lang.Math.max;
 
 public class StreamDictionary implements Dictionary {
+
+  private static final Logger log = LoggerFactory.getLogger(StreamDictionary.class);
 
   private static volatile StreamDictionary instance;
 
@@ -38,16 +43,17 @@ public class StreamDictionary implements Dictionary {
   private final Map<String, Double>[] dict;
   private final double maxVal;
 
-  private StreamDictionary(InputStream stream) throws IOException  {
+  private StreamDictionary(InputStream stream) throws IOException {
     BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-
 
     Map<Integer, Map<String, Double>> builders = Maps.newHashMap();
     Splitter splitter = Splitter.on('|');
 
     double maxVal = 0;
+    long total = 0;
 
     String line;
+
     while ((line = reader.readLine()) != null) {
       List<String> split = ImmutableList.copyOf(splitter.split(line));
 
@@ -62,11 +68,13 @@ public class StreamDictionary implements Dictionary {
         } else {
           maxVal = max(val, maxVal);
           builder.put(key, val);
+          total++;
         }
       } else {
         Map<String, Double> builder = Maps.newHashMap();
         maxVal = max(val, maxVal);
         builder.put(key, val);
+        total++;
         builders.put(length, builder);
       }
     }
@@ -84,6 +92,8 @@ public class StreamDictionary implements Dictionary {
     }
 
     this.maxVal = maxVal;
+
+    log.info("Loaded dictionary of {} items with maxVal {}", total, maxVal);
   }
 
   @Override

@@ -7,9 +7,9 @@ import ru.hh.spellcorrector.SpellCorrector;
 import ru.hh.spellcorrector.dict.StreamDictionary;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import static org.testng.Assert.assertEquals;
 import static ru.hh.spellcorrector.morpher.Morphers.cutDoubleSteps;
+
 public class CorrectorTest {
 
   private static final String TEST_DICT =
@@ -19,7 +19,7 @@ public class CorrectorTest {
       "двигатель|68.4\n" +
       "внутреннего|172.16\n" +
       "сгорания|4.48\n" +
-      "test|10000.0\n" ;
+      "test|10000.0\n";
 
   @BeforeClass
   public static void initDictionary() throws IOException {
@@ -35,52 +35,52 @@ public class CorrectorTest {
 
   @Test
   public void testIdentity() {
-    assertEquals(corrector.correct("дизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизъюнкция".toLowerCase()), "дизъюнкция");
   }
 
   @Test
   public void testDelete() {
-    assertEquals(corrector.correct("Ъдизъюнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("дизъЪюнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("дизъюнкцияЪ".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("дизъЯюнкцияУ".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("Ъдизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизъЪюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизъюнкцияЪ".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизъЯюнкцияУ".toLowerCase()), "дизъюнкция");
   }
 
   @Test
   public void testTranspose() {
-    assertEquals(corrector.correct("ИДзъюнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("дизъюнкцИЯ".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("дизЮЪнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("ИДзъюКНция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("ИДзъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизъюнкцИЯ".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизЮЪнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("ИДзъюКНция".toLowerCase()), "дизъюнкция");
   }
 
   @Test
   public void testReplace() {
-    assertEquals(corrector.correct("Иизъюнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("Цизъюнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("дизЦюнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("дизъюнкциЦ".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("Иизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("Цизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизЦюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизъюнкциЦ".toLowerCase()), "дизъюнкция");
   }
 
   @Test
   public void testInsert() {
-    assertEquals(corrector.correct("Ддизъюнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("Цдизъюнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("дизъЦюнкция".toLowerCase()), "дизъюнкция");
-    assertEquals(corrector.correct("дизъюнкцияЦ".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("Ддизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("Цдизъюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизъЦюнкция".toLowerCase()), "дизъюнкция");
+    assertEquals(corrector.correctWord("дизъюнкцияЦ".toLowerCase()), "дизъюнкция");
   }
 
   @Test
   public void testSplit() {
-    assertEquals(corrector.correct("рыбнаяловля"), "рыбная ловля");
-    assertEquals(corrector.correct("двигательвнутреннегосгорания"), "двигатель внутреннего сгорания");
+    assertEquals(corrector.correctWord("рыбнаяловля"), "рыбная ловля");
+    assertEquals(corrector.correctWord("двигательвнутреннегосгорания"), "двигатель внутреннего сгорания");
   }
 
   @Test
   public void testCharset() {
-    assertEquals(corrector.correct("lbp].yrwbz"), "дизъюнкция");
-    assertEquals(corrector.correct("hs,yfzkjdkz"), "рыбная ловля");
-    assertEquals(corrector.correct("рыбнаяkjdkz"), "рыбная ловля");
+    assertEquals(corrector.correctWord("lbp].yrwbz"), "дизъюнкция");
+    assertEquals(corrector.correctWord("hs,yfzkjdkz"), "рыбная ловля");
+    assertEquals(corrector.correctWord("рыбнаяkjdkz"), "рыбная ловля");
   }
 
 }
