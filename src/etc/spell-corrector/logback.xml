@@ -5,8 +5,16 @@
         </layout>
     </appender>
 
-    <root level="INFO">
+    <appender name="unsorted" class="ru.hh.logging.HhRollingAppender"/>
+    <appender name="timings" class="ru.hh.logging.HhRollingAppender"/>
+
+    <root level="info">
         <appender-ref ref="console"/>
+        <appender-ref ref="unsorted"/>
     </root>
+
+    <logger name="ru.hh.nab.health.monitoring.TimingsLogger" level="debug" additivity="false">
+        <apppender-ref ref="timings"/>
+    </logger>
 
 </configuration>
