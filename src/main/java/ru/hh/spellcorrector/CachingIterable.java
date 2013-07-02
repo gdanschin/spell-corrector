@@ -26,16 +26,6 @@ public class CachingIterable<T> implements Iterable<T> {
     return master.hasNext() ? new Slave() : unmodifiableIterator(storage.iterator());
   }
 
-  public boolean isFetched() {
-    return master.hasNext();
-  }
-
-  public void prefetch() {
-    while (master.hasNext()) {
-      master.next();
-    }
-  }
-
   private class Master extends UnmodifiableIterator<T> {
     private boolean hasNext = true;
 

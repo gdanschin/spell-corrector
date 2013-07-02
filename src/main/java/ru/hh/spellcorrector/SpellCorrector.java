@@ -77,6 +77,4 @@ public class SpellCorrector {
     return JOINER.join(correction.getPhrase().getWords());
   }
 
-
-
 }

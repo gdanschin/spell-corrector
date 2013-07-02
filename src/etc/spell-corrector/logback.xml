@@ -1,20 +1,13 @@
 <configuration>
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} rid:%X{req.h.x-request-id} - %msg%n</Pattern>
-        </layout>
-    </appender>
-
     <appender name="unsorted" class="ru.hh.logging.HhRollingAppender"/>
     <appender name="timings" class="ru.hh.logging.HhRollingAppender"/>
 
     <root level="info">
-        <appender-ref ref="console"/>
         <appender-ref ref="unsorted"/>
     </root>
 
     <logger name="ru.hh.nab.health.monitoring.TimingsLogger" level="debug" additivity="false">
-        <apppender-ref ref="timings"/>
+        <appender-ref ref="timings"/>
     </logger>
 
 </configuration>

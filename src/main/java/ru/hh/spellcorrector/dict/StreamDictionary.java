@@ -12,7 +12,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ import static java.lang.Math.max;
 
 public class StreamDictionary implements Dictionary {
 
-  private static final Logger log = LoggerFactory.getLogger(StreamDictionary.class);
+  private static final Logger logger = LoggerFactory.getLogger(StreamDictionary.class);
 
   private static volatile StreamDictionary instance;
 
@@ -93,7 +92,7 @@ public class StreamDictionary implements Dictionary {
 
     this.maxVal = maxVal;
 
-    log.info("Loaded dictionary of {} items with maxVal {}", total, maxVal);
+    logger.info("Loaded dictionary of {} items with maxVal {}", total, maxVal);
   }
 
   @Override
