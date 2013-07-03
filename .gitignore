@@ -3,3 +3,8 @@
 target/
 src/main/resources/temp/
 logs/*
+
+#debian build
+debian/files
+debian/hh-correktor*
+debian/stamp-makefile-*

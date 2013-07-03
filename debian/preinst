@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+adduser --system --home /var/lib/hh-correktor --disabled-password hh-correktor || /bin/true
+
+DIRS="/var/log/hh-correktor /var/run/hh-correktor"
+mkdir -p $DIRS
+chown hh-correktor:nogroup $DIRS
+chmod 0755 $DIRS
