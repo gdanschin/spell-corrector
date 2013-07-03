@@ -10,19 +10,20 @@ import ru.hh.spellcorrector.morpher.Morphers;
 
 import java.io.IOException;
 
-public class SpellCorrectorAppModule extends NabModule {
+public class CorrektorApp extends NabModule {
 
-  private static final Logger logger = LoggerFactory.getLogger(SpellCorrectorAppModule.class);
+  private static final Logger logger = LoggerFactory.getLogger(CorrektorApp.class);
 
   @Override
   protected void configureApp() {
     try {
-      StreamDictionary.load(SpellCorrectorAppModule.class.getResourceAsStream("/corrections"));
+      StreamDictionary.load(CorrektorApp.class.getResourceAsStream("/corrections"));
     } catch (IOException e) {
       logger.error("Can't load dictionary {}", e);
     }
-    bind(SpellCorrector.class).toProvider(Providers.of(SpellCorrector.of(Morphers.cutDoubleSteps(), StreamDictionary.getInstance(), true))).in(Scopes.SINGLETON);
-    bindJerseyResources(SpellCorrectorResource.class);
+    bind(CorrektorService.class).toInstance(
+        CorrektorService.of(Morphers.cutDoubleSteps(), StreamDictionary.getInstance(), true));
+    bindJerseyResources(CorrektorResource.class);
   }
 
 }

@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
-import ru.hh.spellcorrector.SpellCorrector;
+import ru.hh.spellcorrector.CorrektorService;
 import ru.hh.spellcorrector.dict.StreamDictionary;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class PerfomanceTest {
   }
 
   public Iterable<Integer> runQuery(Morpher morpher, final int times, final int cycles, final String query) {
-    final SpellCorrector corrector = SpellCorrector.of(morpher, StreamDictionary.getInstance(), false);
+    final CorrektorService corrector = CorrektorService.of(morpher, StreamDictionary.getInstance(), false);
 
     return new Iterable<Integer>() {
       @Override

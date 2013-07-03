@@ -11,17 +11,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/")
-public class SpellCorrectorResource {
+public class CorrektorResource {
 
   @Inject
-  SpellCorrector corrector;
+  CorrektorService corrector;
 
   @GET
   @Path("/")
-  @Produces(MediaType.TEXT_XML + ";charset=utf-8")
   public Response correct(@QueryParam("q") String query) {
     try {
-      return Response.ok(corrector.correct(query)).build();
+      return Response.ok(corrector.correct(query)).type(MediaType.APPLICATION_XML_TYPE).build();
     } catch (RuntimeException e) {
       throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
     }
