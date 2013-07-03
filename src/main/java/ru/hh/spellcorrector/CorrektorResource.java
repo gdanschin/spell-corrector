@@ -11,10 +11,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/")
-public class SpellCorrectorResource {
+public class CorrektorResource {
 
   @Inject
-  SpellCorrector corrector;
+  CorrektorService corrector;
 
   @GET
   @Path("/")

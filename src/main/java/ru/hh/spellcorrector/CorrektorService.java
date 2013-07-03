@@ -16,9 +16,9 @@ import static java.util.Arrays.asList;
 import static ru.hh.spellcorrector.dto.WordDto.correction;
 import static ru.hh.spellcorrector.dto.WordDto.text;
 
-public class SpellCorrector {
+public class CorrektorService {
 
-  private static final Logger logger = LoggerFactory.getLogger(SpellCorrector.class);
+  private static final Logger logger = LoggerFactory.getLogger(CorrektorService.class);
 
   private static final Joiner JOINER = Joiner.on(" ");
   private static final Pattern PATTERN = Pattern.compile("[\\w|\\p{InCyrillic}]+");
@@ -33,11 +33,11 @@ public class SpellCorrector {
   private final Morpher morpher;
   private final Morpher lang;
 
-  public static SpellCorrector of(Morpher morpher, Dictionary lang, boolean shortCircuit) {
-    return new SpellCorrector(morpher, lang, shortCircuit);
+  public static CorrektorService of(Morpher morpher, Dictionary lang, boolean shortCircuit) {
+    return new CorrektorService(morpher, lang, shortCircuit);
   }
 
-  private SpellCorrector(Morpher morpher, Dictionary lang, boolean shortCircuit) {
+  private CorrektorService(Morpher morpher, Dictionary lang, boolean shortCircuit) {
     this.morpher = morpher;
     this.lang = Morphers.language(lang, shortCircuit);
   }

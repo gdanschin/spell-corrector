@@ -3,14 +3,14 @@ package ru.hh.spellcorrector.morpher;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import ru.hh.spellcorrector.SpellCorrector;
+import ru.hh.spellcorrector.CorrektorService;
 import ru.hh.spellcorrector.dict.StreamDictionary;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import static org.testng.Assert.assertEquals;
 import static ru.hh.spellcorrector.morpher.Morphers.cutDoubleSteps;
 
-public class CorrectorTest {
+public class CorrektorTest {
 
   private static final String TEST_DICT =
       "дизъюнкция|2.3\n" +
@@ -26,11 +26,11 @@ public class CorrectorTest {
     StreamDictionary.load(new ByteArrayInputStream(TEST_DICT.getBytes("utf-8")));
   }
 
-  private SpellCorrector corrector;
+  private CorrektorService corrector;
 
   @BeforeMethod
   public void intiCorrector() {
-    corrector = SpellCorrector.of(cutDoubleSteps(), StreamDictionary.getInstance(), true);
+    corrector = CorrektorService.of(cutDoubleSteps(), StreamDictionary.getInstance(), true);
   }
 
   @Test
