@@ -10,6 +10,6 @@ import java.util.List;
 public class NigmerDto {
 
   @XmlElement
-  public List<WordDto> words = Lists.newArrayList();
+  public List<WordDto> word = Lists.newArrayList();
 
 }

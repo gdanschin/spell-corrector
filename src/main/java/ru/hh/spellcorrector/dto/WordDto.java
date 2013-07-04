@@ -22,7 +22,9 @@ public class WordDto {
 
   public static WordDto correction(String text, String correction, String source) {
     WordDto word = new WordDto();
-    word.text = text;
+    if (!text.equals("")) {
+      word.text = text;
+    }
 
     word.correction = new Correction();
     word.correction.variant = correction;

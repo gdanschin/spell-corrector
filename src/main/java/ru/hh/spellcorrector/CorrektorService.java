@@ -57,7 +57,7 @@ public class CorrektorService {
       String correction = correctWord(original);
 
       lastMatch =  matcher.end();
-      result.words.add(original.equals(correction) ? text(text + original) : correction(text, correction, original));
+      result.word.add(original.equals(correction) ? text(text + original) : correction(text, correction, original));
     }
 
     long time = System.currentTimeMillis() - startTime;
