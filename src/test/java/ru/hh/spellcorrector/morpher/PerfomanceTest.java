@@ -38,7 +38,7 @@ public class PerfomanceTest {
   }
 
   public Iterable<Integer> runQuery(Morpher morpher, final int times, final int cycles, final String query) {
-    final CorrektorService corrector = CorrektorService.of(morpher, StreamDictionary.getInstance(), false);
+    final CorrektorService corrector = new CorrektorService(morpher, StreamDictionary.getInstance());
 
     return new Iterable<Integer>() {
       @Override

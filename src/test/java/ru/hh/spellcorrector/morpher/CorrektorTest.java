@@ -30,7 +30,7 @@ public class CorrektorTest {
 
   @BeforeMethod
   public void intiCorrector() {
-    corrector = CorrektorService.of(cutDoubleSteps(), StreamDictionary.getInstance(), true);
+    corrector = new CorrektorService(cutDoubleSteps(), StreamDictionary.getInstance());
   }
 
   @Test

@@ -13,7 +13,7 @@ import java.util.Set;
 
 class Charsets {
   public static final String RUS = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-  public static final String ENG = "abcdefghijklmnopqrstuvwxyz";
+  public static final String ENG = "abcdefghijklmnopqrstuvwxyz'";
 
   List<Set<Character>> charsets;
 

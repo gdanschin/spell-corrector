@@ -6,7 +6,7 @@
         <appender-ref ref="unsorted"/>
     </root>
 
-    <logger name="ru.hh.nab.health.monitoring.TimingsLogger" level="debug" additivity="false">
+    <logger name="ru.hh.nab.health.monitoring.TimingsLogger" level="warn" additivity="false">
         <appender-ref ref="timings"/>
     </logger>
 
