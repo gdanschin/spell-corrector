@@ -38,7 +38,7 @@
         <dependency>
             <groupId>ru.hh.nab</groupId>
             <artifactId>nuts-and-bolts</artifactId>
-            <version>1.4.31-SNAPSHOT</version>
+            <version>1.4.31</version>
         </dependency>
     </dependencies>
 
@@ -98,5 +98,10 @@
     <properties>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
     </properties>
+
+    <scm>
+        <connection>scm:git:git@github.com:hhru/hh-correktor.git</connection>
+        <developerConnection>scm:git:git@github.com:hhru/hh-correktor.git</developerConnection>
+    </scm>
 
 </project>
